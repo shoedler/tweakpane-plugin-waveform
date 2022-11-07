@@ -7,24 +7,68 @@
     body {
       margin: 0;
     }
+
+    .sketch {
+      background-image: radial-gradient(hsla(230, 5%, 80%, 0.08) 2px, transparent 0), radial-gradient(hsl(0deg 0% 100% / 8%) 1px, transparent 0);
+      background-size: 32px 32px, 8px 8px;
+      background-position: center;
+      background-color: hsl(230deg 5% 9%);
+      position: relative;
+    }
+
     .wrapper {
-      align-items: start;
-      background-color: #f1f2f3;
+      padding: 128px;
+      position: static;
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
       box-sizing: border-box;
-      display: grid;
-      gap: 32px;
-      grid-template-columns: repeat(auto-fit, 256px);
-      justify-content: center;
       margin-left: auto;
       margin-right: auto;
-      margin-top: 32px;
-      max-width: 960px;
-      padding: 64px;
+    }
+    
+    .text {
+      font-family: Fira Code, sans-serif;
+      color: white;
+    }
+
+    .text > h1 {
+      padding-top: 8px;
+      padding-bottom: 32px;
+      padding-right: 32px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      margin: 0;
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .text > h2 {
+      font-size: 1rem;;
+      padding: 0;
+      margin: 0;
+    }
+
+    .text > p {
+      margin-top: 0;
+      padding-left: 0.1em;
+      padding-right: 0.1em;
+      margin: 0;
+      padding: 0;
+      font-size: 16px;
+      line-height: 1.6;
     }
   </style>
 </head>
-<body>
+<body class="sketch">
   <div class="wrapper">
+    <div class="text">
+      <h2>@shoedler/</h2>
+      <h1>tweakpane-plugin-waveform</h1>
+      <p>Waveform Monitor for observing Arrays and Buffers.</p>
+    </div>
+    <div id="container">
+    </div>
   </div>
   <script src="../node_modules/tweakpane/dist/tweakpane.js"></script>
   <script src="../dist/tweakpane-plugin-waveform.js"></script>
@@ -63,7 +107,7 @@
 
 
     const pane = new Tweakpane.Pane({
-      container: document.querySelector('.wrapper'),
+      container: document.querySelector('#container'),
       title: 'Waveform',
     });
 
@@ -72,8 +116,9 @@
 
     pane.addMonitor(params, 'smallNumberArray', {
       view: 'waveform',
-      min: 0,
-      max: 10,
+      min: -1,
+      max: 11,
+      style: 'bezier',
       interval: 100
     })
 
@@ -120,24 +165,6 @@
         audioToggleBtn.title = 'Stop Web Audio API';
       }
     });
-
-    window.panes = panes;
-
-    if (location.search === '?readme') {
-      panes.forEach((pane) => {
-        pane.children.forEach((child) => {
-          const wrapperElem = document.createElement('div');
-          wrapperElem.classList.add('wrapper');
-          document.body.appendChild(wrapperElem);
-
-          const newPane = new Tweakpane.Pane({
-            container: wrapperElem,
-          });
-          newPane.registerPlugin(TweakpaneEssentialsPlugin);
-          newPane.add(child);
-        });
-      });
-    }
   </script>
 </body>
 </html>
