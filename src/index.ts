@@ -1,4 +1,7 @@
-import {TemplateInputPlugin} from './plugin';
+import {TpPlugin} from '@tweakpane/core';
 
-// Export your plugin(s) as constant `plugins`
-export const plugins = [TemplateInputPlugin];
+import { WaveformPlugin } from './plugin';
+
+export const plugins: TpPlugin[] = [
+	WaveformPlugin
+];

@@ -1,109 +1,76 @@
 import {
-	BaseInputParams,
-	BindingTarget,
-	CompositeConstraint,
-	createRangeConstraint,
-	createStepConstraint,
-	InputBindingPlugin,
+	BaseMonitorParams,
+	Controller,
+	MonitorBindingPlugin,
 	ParamsParsers,
 	parseParams,
+	ValueMap,
+	View,
 } from '@tweakpane/core';
+import {BindingReader} from '@tweakpane/core/dist/cjs/common/binding/binding';
 
-import {PluginController} from './controller';
+import {WaveformController} from './controller/waveform';
+import {WaveformStyles, WaveformValue} from './view/waveform';
 
-export interface PluginInputParams extends BaseInputParams {
+export interface WaveformMonitorParams extends BaseMonitorParams {
 	max?: number;
 	min?: number;
-	step?: number;
-	view: 'dots';
+	style?: WaveformStyles;
 }
 
-// NOTE: You can see JSDoc comments of `InputBindingPlugin` for details about each property
-//
-// `InputBindingPlugin<In, Ex, P>` means...
-// - The plugin receives the bound value as `Ex`,
-// - converts `Ex` into `In` and holds it
-// - P is the type of the parsed parameters
-//
-export const TemplateInputPlugin: InputBindingPlugin<
-	number,
-	number,
-	PluginInputParams
+function shouldShowWaveform(params: WaveformMonitorParams): boolean {
+	return 'view' in params && params.view === 'waveform';
+}
+
+function isWaveformType(value: unknown): value is WaveformValue & boolean {
+	if (typeof value === 'object') {
+		return 'length' in (value as Record<string, unknown>);
+	}
+	return false;
+}
+
+export const WaveformPlugin: MonitorBindingPlugin<
+	WaveformValue,
+	WaveformMonitorParams
 > = {
-	id: 'input-template',
-
-	// type: The plugin type.
-	// - 'input': Input binding
-	// - 'monitor': Monitor binding
-	type: 'input',
-
-	// This plugin template injects a compiled CSS by @rollup/plugin-replace
-	// See rollup.config.js for details
+	id: 'monitor-waveform',
+	type: 'monitor',
 	css: '__css__',
 
-	accept(exValue: unknown, params: Record<string, unknown>) {
-		if (typeof exValue !== 'number') {
-			// Return null to deny the user input
+	accept: (value, params) => {
+		if (!isWaveformType(value)) {
 			return null;
 		}
-
-		// Parse parameters object
 		const p = ParamsParsers;
-		const result = parseParams<PluginInputParams>(params, {
-			// `view` option may be useful to provide a custom control for primitive values
-			view: p.required.constant('dots'),
-
+		const result = parseParams<WaveformMonitorParams>(params, {
 			max: p.optional.number,
 			min: p.optional.number,
-			step: p.optional.number,
+			style: p.optional.custom<WaveformStyles>((value) =>
+				value === 'linear' || value === 'bezier' ? value : undefined,
+			),
+			view: p.optional.string,
 		});
-		if (!result) {
-			return null;
-		}
-
-		// Return a typed value and params to accept the user input
-		return {
-			initialValue: exValue,
-			params: result,
-		};
+		return result ? {initialValue: value, params: result} : null;
 	},
-
 	binding: {
-		reader(_args) {
-			return (exValue: unknown): number => {
-				// Convert an external unknown value into the internal value
-				return typeof exValue === 'number' ? exValue : 0;
-			};
-		},
-
-		constraint(args) {
-			// Create a value constraint from the user input
-			const constraints = [];
-			// You can reuse existing functions of the default plugins
-			const cr = createRangeConstraint(args.params);
-			if (cr) {
-				constraints.push(cr);
-			}
-			const cs = createStepConstraint(args.params);
-			if (cs) {
-				constraints.push(cs);
-			}
-			// Use `CompositeConstraint` to combine multiple constraints
-			return new CompositeConstraint(constraints);
-		},
-
-		writer(_args) {
-			return (target: BindingTarget, inValue) => {
-				// Use `target.write()` to write the primitive value to the target,
-				// or `target.writeProperty()` to write a property of the target
-				target.write(inValue);
-			};
-		},
+		defaultBufferSize: (params) => (shouldShowWaveform(params) ? 64 : 1),
+		reader:
+			(_args): BindingReader<WaveformValue> =>
+			(exValue: unknown): WaveformValue => {
+				if (isWaveformType(exValue)) {
+					return exValue as WaveformValue;
+				}
+				return [];
+			},
 	},
-
-	controller(args) {
-		// Create a controller for the plugin
-		return new PluginController(args.document, {
+	controller: (args) => {
+		return new WaveformController(args.document, {
+			props: ValueMap.fromObject({
+				maxValue: ('max' in args.params ? args.params.max : null) ?? 100,
+				minValue: ('min' in args.params ? args.params.min : null) ?? 0,
+				lineStyle:
+					('style' in args.params ? args.params.style : null) ?? 'linear',
+			}),
 			value: args.value,
 			viewProps: args.viewProps,
 		});

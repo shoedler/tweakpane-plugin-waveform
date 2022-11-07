@@ -1,29 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title></title>
+  <meta charset="UTF-8">
+  <title></title>
+  <style>
+    body {
+      margin: 0;
+    }
+    .wrapper {
+      align-items: start;
+      background-color: #f1f2f3;
+      box-sizing: border-box;
+      display: grid;
+      gap: 32px;
+      grid-template-columns: repeat(auto-fit, 256px);
+      justify-content: center;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 32px;
+      max-width: 960px;
+      padding: 64px;
+    }
+  </style>
 </head>
 <body>
-	<script src="../node_modules/tweakpane/dist/tweakpane.js"></script>
-	<script src="../dist/tweakpane-plugin-template.js"></script>
-	<script>
-		const params = {
-			prop: 3,
-		};
-		const pane = new Tweakpane.Pane();
+  <div class="wrapper">
+  </div>
+  <script src="../node_modules/tweakpane/dist/tweakpane.js"></script>
+  <script src="../dist/tweakpane-plugin-waveform.js"></script>
+  <script>
+    window.ctx = new AudioContext();
+    window.anl = ctx.createAnalyser();
+    window.osc = null;
 
-		// Register plugin
-		pane.registerPlugin(TweakpaneTemplatePlugin);
+    anl.connect(ctx.destination);
+    anl.fftSize = 2048;
 
-		// TODO: Update parameters for your plugin
-		pane.addInput(params, 'prop', {
-			view: 'dots',
-		}).on('change', (ev) => {
-			console.log(ev.value);
-		});
+    const params = {
+      smallNumberArray: [ 5, 6, 7, 8, 9, 3, 9, 8, 7, 6, 5 ],
+      uint8Array: new Uint8Array(8).fill(0).map((_, i) => Math.pow(2, i+1) - 1),
+      uint16Array: new Uint16Array(16).fill(0).map((_, i) => Math.pow(2, i+1) - 1),
+      uint32Array: new Uint32Array(32).fill(0).map((_, i) => Math.pow(2, i+1) - 1),
+      webAudioApiAnlBuf: new Uint8Array(anl.frequencyBinCount)
+    };
 
-		window.pane = pane;
-	</script>
+    setInterval(() => {
+      if (osc)
+        osc.frequency.value = osc.frequency.value > 100 ? 40 : osc.frequency.value + 1;
+    }, 500);
+    
+    setInterval(() => {
+      anl.getByteTimeDomainData(params.webAudioApiAnlBuf);
+      pane.refresh();
+    }, 1);
+
+    setInterval(() => {
+      params.smallNumberArray = params.smallNumberArray.map(v => Math.max(0, Math.min(10, v + (Math.random() * 2 - 1) * 0.1)) );
+      params.uint8Array = params.uint8Array.map(v => ++v );
+      params.uint16Array = params.uint16Array.map(v => v+1e2 );
+      params.uint32Array = params.uint32Array.map(v => v+1e8 );
+    }, 50);
+
+
+    const pane = new Tweakpane.Pane({
+      container: document.querySelector('.wrapper'),
+      title: 'Waveform',
+    });
+
+    // Register plugin
+    pane.registerPlugin(TweakpaneWaveformPlugin);
+
+    pane.addMonitor(params, 'smallNumberArray', {
+      view: 'waveform',
+      min: 0,
+      max: 10,
+      interval: 100
+    })
+
+    pane.addMonitor(params, 'uint8Array', {
+      view: 'waveform',
+      min: 0,
+      max: Math.pow(2, 8),
+      interval: 500
+    })
+
+    pane.addMonitor(params, 'uint16Array', {
+      view: 'waveform',
+      min: 0,
+      max: Math.pow(2, 16),
+      interval: 500
+    })
+
+    pane.addMonitor(params, 'uint32Array', {
+      view: 'waveform',
+      min: 0,
+      max: Math.pow(2, 32),
+      interval: 500,
+      style: 'bezier'
+    })
+
+    pane.addMonitor(params, 'webAudioApiAnlBuf', {
+      view: 'waveform',
+      min: -50,
+      max: Math.pow(2, 8) + 50,
+      interval: 0,
+    })
+
+    const audioToggleBtn = pane.addButton({ 
+      title: "Start Web Audio API" 
+    }).on("click", () => { 
+      if (osc) {
+        osc.stop();
+        osc = null;
+        audioToggleBtn.title = 'Start Web Audio API';
+      } else {
+        osc = ctx.createOscillator();
+        osc.connect(anl);
+        osc.start();
+        audioToggleBtn.title = 'Stop Web Audio API';
+      }
+    });
+
+    window.panes = panes;
+
+    if (location.search === '?readme') {
+      panes.forEach((pane) => {
+        pane.children.forEach((child) => {
+          const wrapperElem = document.createElement('div');
+          wrapperElem.classList.add('wrapper');
+          document.body.appendChild(wrapperElem);
+
+          const newPane = new Tweakpane.Pane({
+            container: wrapperElem,
+          });
+          newPane.registerPlugin(TweakpaneEssentialsPlugin);
+          newPane.add(child);
+        });
+      });
+    }
+  </script>
 </body>
 </html>

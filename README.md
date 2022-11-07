@@ -1,77 +1,55 @@
-# Tweakpane plugin template
-Plugin template of an input binding for [Tweakpane][tweakpane].
+# Tweakpane Waveform plugin
 
+Waveform Monitor for [Tweakpane][tweakpane].
 
-# For plugin developers
-TODO: Delete this section before publishing your plugin.
-
-
-## Quick start
-- Install dependencies:
-  ```
-  % npm install
-  ```
-- Build source codes and watch changes:
-  ```
-  % npm start
-  ```
-- Open `test/browser.html` to see the result.
-
-
-## File structure
-```
-|- src
-|  |- sass ............ Plugin CSS
-|  |- index.ts ........ Entrypoint
-|  |- plugin.ts ....... Plugin
-|  |- controller.ts ... Controller for the custom view
-|  `- view.ts ......... Custom view
-|- dist ............... Compiled files
-`- test
-   `- browser.html .... Plugin labo
-```
-
-
-# For plugin users
-
+![plugin- essentials](https://user-images.githubusercontent.com/38029550/200204309-76ce8fd4-31a6-487d-b87f-0e868eda7a52.png)
 
 ## Installation
-
 
 ### Browser
 ```html
 <script src="tweakpane.min.js"></script>
-<script src="tweakpane-plugin-template.min.js"></script>
+<script src="tweakpane-plugin-waveform.min.js"></script>
 <script>
   const pane = new Tweakpane.Pane();
-  pane.registerPlugin(TweakpaneTemplatePlugin);
+  pane.registerPlugin(TweakpaneWaveformPlugin);
 </script>
 ```
 
-
 ### Package
+
 ```js
 import {Pane} from 'tweakpane';
-import * as TemplatePlugin from 'tweakpane-plugin-template';
+import * as WaveformPlugin from '@tweakpane/plugin-waveform';
 
 const pane = new Pane();
-pane.registerPlugin(TemplatePlugin);
+pane.registerPlugin(WaveformPlugin);
 ```
-
 
 ## Usage
+
+![waveform](https://user-images.githubusercontent.com/38029550/200204325-734b04af-9b4a-4a53-972e-f3b1eabdd9a1.png)
+
 ```js
 const params = {
-  prop: 3,
+  prop1: [ 5, 6, 7, 8, 9, 3, 9, 8, 7, 6, 5 ],
+  prop2: new Uint8Array(8).fill(0).map((_, i) => Math.pow(2, i+1) - 1),
 };
 
-// TODO: Update parameters for your plugin
-pane.addInput(params, 'prop', {
-  view: 'dots',
-}).on('change', (ev) => {
-  console.log(ev.value);
-});
-```
+pane.addMonitor(params, 'prop1', {
+  view: 'waveform',
+  min: 0,
+  max: 10,
+  style: 'bezier',
+  interval: 100,
+})
 
+pane.addMonitor(params, 'prop2', {
+  view: 'waveform',
+  min: 0,
+  max: Math.pow(2, 8),
+  interval: 500
+})
+```
 
 [tweakpane]: https://github.com/cocopon/tweakpane/
