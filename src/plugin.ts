@@ -1,11 +1,9 @@
 import {
   BaseMonitorParams,
-  Controller,
   MonitorBindingPlugin,
   ParamsParsers,
   parseParams,
   ValueMap,
-  View,
 } from '@tweakpane/core';
 import {BindingReader} from '@tweakpane/core/dist/cjs/common/binding/binding';
 

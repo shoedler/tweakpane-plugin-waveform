@@ -1,7 +1,5 @@
 import {TpPlugin} from '@tweakpane/core';
 
-import { WaveformPlugin } from './plugin';
+import {WaveformPlugin} from './plugin';
 
-export const plugins: TpPlugin[] = [
-  WaveformPlugin
-];
+export const plugins: TpPlugin[] = [WaveformPlugin];
