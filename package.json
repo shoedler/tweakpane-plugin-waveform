@@ -13,7 +13,7 @@
     "prepack": "run-s clean build",
     "prepublishOnly": "npm test",
     "start": "npm run watch",
-    "test": "eslint --ext .ts 'src/**/*.ts'",
+    "test": "eslint --ext .ts \"src/**/*.ts\"",
     "assets": "run-s clean build assets:version assets:zip",
     "assets:version": "node scripts/assets-append-version.js",
     "assets:zip": "zip -x '*types*' -j -r $(node scripts/dist-name.js)-$(cat package.json | npx json version).zip dist",
