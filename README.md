@@ -2,7 +2,7 @@
 
 Waveform Monitor for [Tweakpane][tweakpane].
 
-![plugin- essentials](https://user-images.githubusercontent.com/38029550/200204309-76ce8fd4-31a6-487d-b87f-0e868eda7a52.png)
+![tweakpane-plugin-waveform](https://user-images.githubusercontent.com/38029550/200271366-554d49f7-171a-4e85-beee-08b9b3a12bd5.png)
 
 ## Installation
 
@@ -28,7 +28,7 @@ pane.registerPlugin(WaveformPlugin);
 
 ## Usage
 
-![waveform](https://user-images.githubusercontent.com/38029550/200204325-734b04af-9b4a-4a53-972e-f3b1eabdd9a1.png)
+![tweakpane-plugin-waveform-readme-sample](https://user-images.githubusercontent.com/38029550/200271415-5abf541d-6454-4df4-bd03-f09729a397d3.png)
 
 ```js
 const params = {
