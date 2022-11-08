@@ -1,8 +1,8 @@
 {
   "name": "tweakpane-plugin-waveform",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Waveform Monitor plugin for tweakpane",
-  "main": "dist/tweakpane-plugin-essentials.js",
+  "main": "dist/tweakpane-plugin-waveform.js",
   "types": "dist/types/index.d.ts",
   "author": "shoelder",
   "license": "MIT",
