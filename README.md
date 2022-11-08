@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/tweakpane-plugin-waveform.svg)](https://badge.fury.io/js/tweakpane-plugin-waveform)
+
 # Tweakpane Waveform plugin
 
 Waveform Monitor for [Tweakpane][tweakpane].
