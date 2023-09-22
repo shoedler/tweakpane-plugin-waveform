@@ -1,6 +1,6 @@
 import {BufferedValue, Controller, ViewProps} from '@tweakpane/core';
 
-import {WaveformProps, WaveformValue, WaveformView} from '../view/waveform';
+import {WaveformProps, WaveformValue, WaveformView} from '../view/waveform.js';
 
 interface Config {
   value: BufferedValue<WaveformValue>;

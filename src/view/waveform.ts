@@ -11,15 +11,15 @@ import {
 import {
   CubicBézierDrawerProvider,
   LinearDrawerProvider,
-} from './waveform-drawer';
+} from './waveform-drawer.js';
 
 export type WaveformValue = Uint8Array | Uint16Array | Uint32Array | number[];
 
 export type WaveformStyles = 'linear' | 'bezier';
 
 export type WaveformProps = ValueMap<{
-  maxValue: number;
-  minValue: number;
+  max: number;
+  min: number;
   lineStyle: WaveformStyles;
 }>;
 
@@ -103,8 +103,8 @@ export class WaveformView implements View {
     const latestValue = this.value.rawValue[this.value.rawValue.length - 1];
 
     // Graph
-    const min = this.props.get('minValue');
-    const max = this.props.get('maxValue');
+    const min = this.props.get('min');
+    const max = this.props.get('max');
     const range = max - min;
     const points: WaveformPoint[] = [];
 

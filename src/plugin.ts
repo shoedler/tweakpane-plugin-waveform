@@ -1,14 +1,14 @@
 import {
   BaseMonitorParams,
+  createPlugin,
   MonitorBindingPlugin,
-  ParamsParsers,
-  parseParams,
+  parseRecord,
   ValueMap,
 } from '@tweakpane/core';
-import {BindingReader} from '@tweakpane/core/dist/cjs/common/binding/binding';
+import {BindingReader} from '@tweakpane/core';
 
-import {WaveformController} from './controller/waveform';
-import {WaveformStyles, WaveformValue} from './view/waveform';
+import {WaveformController} from './controller/waveform.js';
+import {WaveformStyles, WaveformValue} from './view/waveform.js';
 
 export interface WaveformMonitorParams extends BaseMonitorParams {
   max?: number;
@@ -30,24 +30,27 @@ function isWaveformType(value: unknown): value is WaveformValue & boolean {
 export const WaveformPlugin: MonitorBindingPlugin<
   WaveformValue,
   WaveformMonitorParams
-> = {
+> = createPlugin({
   id: 'monitor-waveform',
   type: 'monitor',
-  css: '__css__',
 
   accept: (value, params) => {
     if (!isWaveformType(value)) {
       return null;
     }
-    const p = ParamsParsers;
-    const result = parseParams<WaveformMonitorParams>(params, {
-      max: p.optional.number,
-      min: p.optional.number,
-      style: p.optional.custom<WaveformStyles>((value) =>
-        value === 'linear' || value === 'bezier' ? value : undefined,
-      ),
-      view: p.optional.string,
-    });
+
+    const result = parseRecord<WaveformMonitorParams>(
+      params,
+      (p) =>
+        ({
+          max: p.optional.number,
+          min: p.optional.number,
+          style: p.optional.custom<WaveformStyles>((value) =>
+            value === 'linear' || value === 'bezier' ? value : undefined,
+          ),
+          view: p.optional.string,
+        } as any), // TODO types
+    );
     return result ? {initialValue: value, params: result} : null;
   },
   binding: {
@@ -64,8 +67,8 @@ export const WaveformPlugin: MonitorBindingPlugin<
   controller: (args) => {
     return new WaveformController(args.document, {
       props: ValueMap.fromObject({
-        maxValue: ('max' in args.params ? args.params.max : null) ?? 100,
-        minValue: ('min' in args.params ? args.params.min : null) ?? 0,
+        max: ('max' in args.params ? args.params.max : null) ?? 100,
+        min: ('min' in args.params ? args.params.min : null) ?? 0,
         lineStyle:
           ('style' in args.params ? args.params.style : null) ?? 'linear',
       }),
@@ -73,4 +76,4 @@ export const WaveformPlugin: MonitorBindingPlugin<
       viewProps: args.viewProps,
     });
   },
-};
+});

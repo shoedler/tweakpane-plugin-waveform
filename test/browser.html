@@ -70,9 +70,10 @@
     <div id="container">
     </div>
   </div>
-  <script src="../node_modules/tweakpane/dist/tweakpane.js"></script>
-  <script src="../dist/tweakpane-plugin-waveform.js"></script>
-  <script>
+  <script type="module">
+    import * as Tweakpane from '../node_modules/tweakpane/dist/tweakpane.js';
+		import * as TweakpaneWaveformPlugin from '../dist/tweakpane-plugin-waveform.js';
+
     window.ctx = new AudioContext();
     window.anl = ctx.createAnalyser();
     window.osc = null;
@@ -114,7 +115,7 @@
     // Register plugin
     pane.registerPlugin(TweakpaneWaveformPlugin);
 
-    pane.addMonitor(params, 'smallNumberArray', {
+    pane.addBinding(params, 'smallNumberArray', {
       view: 'waveform',
       min: -1,
       max: 11,
@@ -122,21 +123,21 @@
       interval: 100
     })
 
-    pane.addMonitor(params, 'uint8Array', {
+    pane.addBinding(params, 'uint8Array', {
       view: 'waveform',
       min: 0,
       max: Math.pow(2, 8),
       interval: 500
     })
 
-    pane.addMonitor(params, 'uint16Array', {
+    pane.addBinding(params, 'uint16Array', {
       view: 'waveform',
       min: 0,
       max: Math.pow(2, 16),
       interval: 500
     })
 
-    pane.addMonitor(params, 'uint32Array', {
+    pane.addBinding(params, 'uint32Array', {
       view: 'waveform',
       min: 0,
       max: Math.pow(2, 32),
@@ -144,11 +145,11 @@
       style: 'bezier'
     })
 
-    pane.addMonitor(params, 'webAudioApiAnlBuf', {
+    pane.addBinding(params, 'webAudioApiAnlBuf', {
       view: 'waveform',
       min: -50,
       max: Math.pow(2, 8) + 50,
-      interval: 0,
+      interval: 0
     })
 
     const audioToggleBtn = pane.addButton({ 
