@@ -18,8 +18,8 @@ export type WaveformValue = Uint8Array | Uint16Array | Uint32Array | number[];
 export type WaveformStyles = 'linear' | 'bezier';
 
 export type WaveformProps = ValueMap<{
-  max: number;
-  min: number;
+  max: number | null;
+  min: number | null;
   lineStyle: WaveformStyles;
 }>;
 
@@ -52,7 +52,7 @@ export class WaveformView implements View {
   private readonly value: BufferedValue<WaveformValue>;
   private readonly svgElem: SVGElement;
   private readonly pathElem: SVGPathElement;
-  private readonly lineDrawProvider: IWaveformDrawerProvider;
+  private readonly lineDrawerProvider: IWaveformDrawerProvider;
 
   constructor(doc: Document, config: Config) {
     this.element = doc.createElement('div');
@@ -72,13 +72,13 @@ export class WaveformView implements View {
 
     switch (this.props.get('lineStyle')) {
       case 'linear':
-        this.lineDrawProvider = new LinearDrawerProvider();
+        this.lineDrawerProvider = new LinearDrawerProvider();
         break;
       case 'bezier':
-        this.lineDrawProvider = new CubicBézierDrawerProvider();
+        this.lineDrawerProvider = new CubicBézierDrawerProvider();
         break;
       default:
-        this.lineDrawProvider = new LinearDrawerProvider();
+        this.lineDrawerProvider = new LinearDrawerProvider();
         break;
     }
 
@@ -100,15 +100,19 @@ export class WaveformView implements View {
 
   private refresh(): void {
     const bounds = this.svgElem.getBoundingClientRect();
-    const latestValue = this.value.rawValue[this.value.rawValue.length - 1];
-
-    // Graph
-    const min = this.props.get('min');
-    const max = this.props.get('max');
-    const range = max - min;
-    const points: WaveformPoint[] = [];
+    const latestValue = this.value.rawValue[0];
 
     if (latestValue) {
+      const min =
+        this.props.get('min') ??
+        Math.min(...(latestValue as number[])) - 1;
+      const max =
+        this.props.get('max') ??
+        Math.max(...(latestValue as number[])) + 1;
+
+      const range = max - min;
+      const points: WaveformPoint[] = [];
+
       const maxIndex = latestValue.length - 1;
 
       // Grid
@@ -117,6 +121,7 @@ export class WaveformView implements View {
       const gridHeight = range > 50 ? 0 : bounds.height / range;
       this.element.style.backgroundSize = `${gridWidth}px ${gridHeight}px`;
 
+      // Graph
       latestValue.forEach((v, index) => {
         if (v === undefined) {
           return;
@@ -125,7 +130,7 @@ export class WaveformView implements View {
         const y = mapRange(v, min, max, bounds.height, 0);
         points.push([Math.floor(x), Math.floor(y)]);
       });
-      const d = this.svgPath(points, this.lineDrawProvider.drawer);
+      const d = this.svgPath(points, this.lineDrawerProvider.drawer);
       this.pathElem.setAttributeNS(null, 'd', d);
     }
   }

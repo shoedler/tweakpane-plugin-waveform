@@ -67,8 +67,8 @@ export const WaveformPlugin: MonitorBindingPlugin<
   controller: (args) => {
     return new WaveformController(args.document, {
       props: ValueMap.fromObject({
-        max: ('max' in args.params ? args.params.max : null) ?? 100,
-        min: ('min' in args.params ? args.params.min : null) ?? 0,
+        max: ('max' in args.params ? args.params.max : null) ?? null,
+        min: ('min' in args.params ? args.params.min : null) ?? null,
         lineStyle:
           ('style' in args.params ? args.params.style : null) ?? 'linear',
       }),
