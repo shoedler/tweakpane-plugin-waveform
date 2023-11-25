@@ -104,11 +104,9 @@ export class WaveformView implements View {
 
     if (latestValue) {
       const min =
-        this.props.get('min') ??
-        Math.min(...(latestValue as number[])) - 1;
+        this.props.get('min') ?? Math.min(...(latestValue as number[])) - 1;
       const max =
-        this.props.get('max') ??
-        Math.max(...(latestValue as number[])) + 1;
+        this.props.get('max') ?? Math.max(...(latestValue as number[])) + 1;
 
       const range = max - min;
       const points: WaveformPoint[] = [];
