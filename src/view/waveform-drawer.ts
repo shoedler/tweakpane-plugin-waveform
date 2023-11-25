@@ -1,4 +1,4 @@
-import {IWaveformDrawerProvider, WaveformPoint} from './waveform';
+import {IWaveformDrawerProvider, WaveformPoint} from './waveform.js';
 
 export class LinearDrawerProvider implements IWaveformDrawerProvider {
   public readonly drawer = (point: WaveformPoint): string =>

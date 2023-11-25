@@ -38,7 +38,7 @@ const params = {
   prop2: new Uint8Array(8).fill(0).map((_, i) => Math.pow(2, i+1) - 1),
 };
 
-pane.addMonitor(params, 'prop1', {
+pane.addBinding(params, 'prop1', {
   view: 'waveform',
   min: 0,
   max: 10,
@@ -46,7 +46,7 @@ pane.addMonitor(params, 'prop1', {
   interval: 100,
 })
 
-pane.addMonitor(params, 'prop2', {
+pane.addBinding(params, 'prop2', {
   view: 'waveform',
   min: 0,
   max: Math.pow(2, 8),

@@ -36,9 +36,10 @@
     <div id="container">
     </div>
   </div>
-  <script src="../node_modules/tweakpane/dist/tweakpane.js"></script>
-  <script src="../dist/tweakpane-plugin-waveform.js"></script>
-  <script>
+  <script type="module">
+    import * as Tweakpane from '../node_modules/tweakpane/dist/tweakpane.js';
+		import * as TweakpaneWaveformPlugin from '../dist/tweakpane-plugin-waveform.js';
+
     const params = {
       prop1: [ 5, 6, 7, 8, 9, 3, 9, 8, 7, 6, 5 ],
       prop2: new Uint8Array(8).fill(0).map((_, i) => Math.pow(2, i+1) - 1),
@@ -57,15 +58,15 @@
     // Register plugin
     pane.registerPlugin(TweakpaneWaveformPlugin);
 
-    pane.addMonitor(params, 'prop1', {
+    pane.addBinding(params, 'prop1', {
       view: 'waveform',
       min: -1,
       max: 11,
       style: 'bezier',
-      interval: 100,
+      interval: 100
     })
 
-    pane.addMonitor(params, 'prop2', {
+    pane.addBinding(params, 'prop2', {
       view: 'waveform',
       min: 0,
       max: Math.pow(2, 8),
