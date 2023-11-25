@@ -54,4 +54,9 @@ pane.addMonitor(params, 'prop2', {
 })
 ```
 
+## Notes 
+
+- If you omit the `min` / `max` properties, they will be inferred from the most recent (plotted) value each time the view updates.
+- If your array-to-monitor's length is smaller than 32 entries and has a max peak-to-peak difference of 50, a grid will be displayed
+
 [tweakpane]: https://github.com/cocopon/tweakpane/
